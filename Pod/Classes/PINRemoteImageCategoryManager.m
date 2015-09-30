@@ -153,12 +153,7 @@
 {
     if (![NSThread isMainThread]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self setImageOnView:view
-                        fromURLs:urls
-                placeholderImage:placeholderImage
-                    processorKey:processorKey
-                       processor:processor
-                      completion:completion];
+            [self setImageOnView:view fromURLs:urls placeholderImage:placeholderImage completion:completion];
         });
         return;
     }
@@ -172,11 +167,12 @@
     if (placeholderImage) {
         [view pin_setPlaceholderWithImage:placeholderImage];
     }
-    PINRemoteImageManagerDownloadOptions options = PINRemoteImageManagerDownloadOptionsNone;
+    PINRemoteImageManagerDownloadOptions options = [view pin_defaultOptions];
+
     if ([view pin_ignoreGIFs]) {
         options |= PINRemoteImageManagerDownloadOptionsIgnoreGIFs;
     }
-    
+
     PINRemoteImageManagerImageCompletion internalProgress = nil;
     if ([self updateWithProgressOnView:view] && processorKey.length <= 0 && processor == nil) {
         internalProgress = ^(PINRemoteImageManagerResult *result)
